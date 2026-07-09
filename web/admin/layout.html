@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}} — S.L.O.P.</title>
+<style>
+:root { --bg:#0f172a; --panel:#1e293b; --panel2:#334155; --fg:#e2e8f0; --muted:#94a3b8; --accent:#3b82f6; --border:#334155; --ok:#22c55e; --danger:#ef4444; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; background:#f8fafc; color:#0f172a; display:flex; min-height:100vh; }
+a { color: var(--accent); text-decoration:none; }
+.sidebar { width:220px; background:var(--bg); color:var(--fg); display:flex; flex-direction:column; padding:1rem 0; flex-shrink:0; }
+.sidebar .brand { font-weight:800; letter-spacing:1px; padding:0.5rem 1.25rem 1.25rem; font-size:1.15rem; }
+.sidebar a { color:var(--muted); padding:0.6rem 1.25rem; display:block; }
+.sidebar a:hover { color:#fff; background:var(--panel); }
+.sidebar a.active { color:#fff; background:var(--panel2); border-left:3px solid var(--accent); }
+.sidebar form { margin-top:auto; padding:1rem 1.25rem; }
+.sidebar form button { width:100%; background:transparent; color:var(--muted); border:1px solid var(--border); padding:0.5rem; border-radius:6px; cursor:pointer; }
+.sidebar form button:hover { color:#fff; border-color:var(--muted); }
+.main { flex:1; padding:1.5rem 2rem; max-width:100%; overflow-x:hidden; }
+.topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; }
+.topbar h1 { margin:0; font-size:1.5rem; }
+.flash { background:#dcfce7; color:#166534; padding:0.6rem 1rem; border-radius:6px; margin-bottom:1rem; }
+.btn { display:inline-block; background:var(--accent); color:#fff; border:none; padding:0.55rem 1rem; border-radius:6px; cursor:pointer; font-size:0.95rem; }
+.btn:hover { background:#2563eb; text-decoration:none; }
+.btn-secondary { background:#e2e8f0; color:#0f172a; }
+.btn-secondary:hover { background:#cbd5e1; }
+.btn-danger { background:var(--danger); }
+.btn-danger:hover { background:#dc2626; }
+.btn-sm { padding:0.3rem 0.6rem; font-size:0.85rem; }
+table { width:100%; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+th, td { text-align:left; padding:0.7rem 1rem; border-bottom:1px solid #e2e8f0; }
+th { background:#f1f5f9; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.5px; color:#475569; }
+tr:last-child td { border-bottom:none; }
+.card { background:#fff; border-radius:8px; padding:1.25rem; box-shadow:0 1px 3px rgba(0,0,0,0.08); margin-bottom:1.5rem; }
+label { display:block; font-weight:600; margin:0.75rem 0 0.25rem; font-size:0.9rem; }
+input[type=text], input[type=url], input[type=password], select, textarea { width:100%; padding:0.55rem; border:1px solid #cbd5e1; border-radius:6px; font-size:0.95rem; font-family:inherit; }
+textarea { resize:vertical; }
+textarea.code { font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size:0.85rem; }
+.muted { color:#64748b; }
+.badge { display:inline-block; padding:0.15rem 0.5rem; border-radius:999px; font-size:0.75rem; font-weight:600; }
+.badge-published { background:#dcfce7; color:#166534; }
+.badge-draft { background:#fef9c3; color:#854d0e; }
+.row { display:flex; gap:1rem; flex-wrap:wrap; }
+.row > * { flex:1; min-width:200px; }
+.actions { display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1rem; }
+.tag { display:inline-block; background:#e2e8f0; color:#475569; padding:0.1rem 0.5rem; border-radius:999px; font-size:0.75rem; margin-right:0.25rem; }
+details summary { cursor:pointer; font-weight:600; padding:0.5rem 0; }
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="brand">S.L.O.P.</div>
+  <a href="/admin" class="{{if eq .Active "dashboard"}}active{{end}}">Dashboard</a>
+  <a href="/admin/posts" class="{{if eq .Active "posts"}}active{{end}}">Posts</a>
+  <a href="/admin/pages" class="{{if eq .Active "pages"}}active{{end}}">Pages</a>
+  <a href="/admin/images" class="{{if eq .Active "images"}}active{{end}}">Images</a>
+  <a href="/admin/fonts" class="{{if eq .Active "fonts"}}active{{end}}">Fonts</a>
+  <a href="/admin/theme" class="{{if eq .Active "theme"}}active{{end}}">Theme</a>
+  <a href="/admin/seo" class="{{if eq .Active "seo"}}active{{end}}">SEO &amp; Social</a>
+  <a href="/admin/backup" class="{{if eq .Active "backup"}}active{{end}}">Backup</a>
+  <a href="/admin/account" class="{{if eq .Active "account"}}active{{end}}">Account</a>
+  <form method="post" action="/admin/logout"><button type="submit">Log out</button></form>
+</nav>
+<main class="main">
+  <div class="topbar"><h1>{{.Title}}</h1></div>
+  {{if .Flash}}<div class="flash">{{.Flash}}</div>{{end}}
+  {{if .Error}}<div class="flash" style="background:#fef2f2; color:#991b1b;">{{.Error}}</div>{{end}}
+  {{block "content" .}}{{end}}
+</main>
+</body>
+</html>

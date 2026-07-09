@@ -1,0 +1,33 @@
+{{define "content"}}
+<div class="card">
+  <h2 style="margin-top:0;">Site title</h2>
+  <form method="post" action="/admin/theme" class="actions">
+    <input type="text" name="site_title" value="{{.Data.SiteTitle}}" style="flex:1;">
+    <button class="btn" type="submit">Save</button>
+  </form>
+</div>
+
+<div class="card actions" style="justify-content:space-between;">
+  <span class="muted">Templates are stored in the database. Edit freely, or restore the shipped default.</span>
+  <form method="post" action="/admin/theme/reset" onsubmit="return confirm('Reset ALL theme fragments to default?');">
+    <input type="hidden" name="key" value="all">
+    <button class="btn btn-danger" type="submit">Reset all to default</button>
+  </form>
+</div>
+
+{{range .Data.Fragments}}
+<div class="card">
+  <div class="actions" style="justify-content:space-between; margin-bottom:0.5rem;">
+    <strong>{{.Label}} <span class="muted">({{.Key}} — {{.Language}})</span></strong>
+    <form method="post" action="/admin/theme/reset" onsubmit="return confirm('Reset {{.Label}} to default?');">
+      <input type="hidden" name="key" value="{{.Key}}">
+      <button class="btn btn-sm btn-secondary" type="submit">Reset to default</button>
+    </form>
+  </div>
+  <form method="post" action="/admin/theme">
+    <textarea name="{{.Key}}" class="code" rows="14">{{.Value}}</textarea>
+    <div style="margin-top:0.5rem;"><button class="btn" type="submit">Save {{.Label}}</button></div>
+  </form>
+</div>
+{{end}}
+{{end}}

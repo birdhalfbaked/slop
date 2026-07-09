@@ -1,0 +1,57 @@
+{{define "content"}}
+<div class="actions" style="justify-content:space-between; margin-bottom:1rem;">
+  <span class="muted">{{.Data.Total}} post(s)</span>
+  <div class="actions" style="gap:0.75rem;">
+    <label class="actions" style="gap:0.35rem; font-weight:400;">
+      <span class="muted">Show</span>
+      <select style="width:auto;" onchange="location.href='/admin/posts?limit='+this.value">
+        <option value="5" {{if eq .Data.PerPage 5}}selected{{end}}>5</option>
+        <option value="10" {{if eq .Data.PerPage 10}}selected{{end}}>10</option>
+        <option value="25" {{if eq .Data.PerPage 25}}selected{{end}}>25</option>
+        <option value="50" {{if eq .Data.PerPage 50}}selected{{end}}>50</option>
+      </select>
+    </label>
+    <a class="btn" href="/admin/posts/new">+ New Post</a>
+  </div>
+</div>
+
+<div class="card">
+  {{if .Data.Posts}}
+  <table>
+    <thead><tr><th>Title</th><th>Slug</th><th>Status</th><th>Published</th><th>Updated</th><th>Actions</th></tr></thead>
+    <tbody>
+      {{range .Data.Posts}}
+      <tr>
+        <td>{{if .Title}}{{.Title}}{{else}}<em class="muted">(untitled)</em>{{end}}</td>
+        <td><a href="/{{.Slug}}" target="_blank">/{{.Slug}}</a></td>
+        <td>
+          {{if eq .Status "published"}}<span class="badge badge-published">Published</span>{{else}}<span class="badge badge-draft">Draft</span>{{end}}
+        </td>
+        <td class="muted">{{if .PublishedAt}}{{datePtr .PublishedAt}}{{else}}—{{end}}</td>
+        <td class="muted">{{date .UpdatedAt}}</td>
+        <td class="actions">
+          <a class="btn btn-sm btn-secondary" href="/admin/posts/{{.ID}}/edit">Edit</a>
+          {{if eq .Status "published"}}
+          <form method="post" action="/admin/posts/{{.ID}}/unpublish"><button class="btn btn-sm btn-secondary" type="submit">Unpublish</button></form>
+          {{else}}
+          <form method="post" action="/admin/posts/{{.ID}}/publish"><button class="btn btn-sm" type="submit">Publish</button></form>
+          {{end}}
+          <form method="post" action="/admin/posts/{{.ID}}/delete" onsubmit="return confirm('Delete this post?');"><button class="btn btn-sm btn-danger" type="submit">Delete</button></form>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">No posts yet. <a href="/admin/posts/new">Create your first post</a>.</p>
+  {{end}}
+</div>
+
+{{if gt .Data.TotalPages 1}}
+<div class="actions" style="justify-content:center; gap:1rem;">
+  {{if .Data.HasPrev}}<a class="btn btn-sm btn-secondary" href="/admin/posts?page={{.Data.PrevPage}}&limit={{.Data.PerPage}}">&larr; Prev</a>{{else}}<span class="btn btn-sm btn-secondary" style="opacity:0.4; pointer-events:none;">&larr; Prev</span>{{end}}
+  <span class="muted">Page {{.Data.Page}} of {{.Data.TotalPages}}</span>
+  {{if .Data.HasNext}}<a class="btn btn-sm btn-secondary" href="/admin/posts?page={{.Data.NextPage}}&limit={{.Data.PerPage}}">Next &rarr;</a>{{else}}<span class="btn btn-sm btn-secondary" style="opacity:0.4; pointer-events:none;">Next &rarr;</span>{{end}}
+</div>
+{{end}}
+{{end}}

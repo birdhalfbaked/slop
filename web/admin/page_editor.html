@@ -1,0 +1,41 @@
+{{define "content"}}
+{{$page := .Data.Page}}
+<form method="post" action="{{if .Data.IsNew}}/admin/pages{{else}}/admin/pages/{{$page.ID}}{{end}}">
+<div class="card">
+  <label for="title">Title</label>
+  <input id="title" name="title" type="text" value="{{$page.Title}}" placeholder="Page title">
+
+  <label for="slug">Slug <span class="muted">(URL: /slug — leave blank to auto-generate)</span></label>
+  <input id="slug" name="slug" type="text" value="{{$page.Slug}}" placeholder="about">
+
+  <label for="body_format">Format</label>
+  <select id="body_format" name="body_format">
+    <option value="markdown" {{if eq $page.BodyFormat "markdown"}}selected{{end}}>Markdown</option>
+    <option value="html" {{if eq $page.BodyFormat "html"}}selected{{end}}>HTML</option>
+  </select>
+
+  <label for="body_source">Content</label>
+  <textarea id="body_source" name="body_source" class="code" rows="24" placeholder="Write your page content...">{{$page.BodySource}}</textarea>
+</div>
+
+<div class="card actions">
+  <a class="btn btn-secondary" href="/admin/pages">&larr; Back to pages</a>
+  <button class="btn btn-secondary" type="submit" name="action" value="save">Save draft</button>
+  {{if eq $page.Status "published"}}
+  <button class="btn" type="submit" name="action" value="save">Save</button>
+  <button class="btn btn-secondary" type="submit" name="action" value="unpublish">Unpublish</button>
+  <span class="badge badge-published">Published</span>
+  {{else}}
+  <button class="btn" type="submit" name="action" value="publish">Publish</button>
+  <span class="badge badge-draft">Draft</span>
+  {{end}}
+</div>
+</form>
+{{if not .Data.IsNew}}
+<form method="post" action="/admin/pages/{{$page.ID}}/delete" onsubmit="return confirm('Delete this page?');">
+  <div class="card actions" style="justify-content:flex-end;">
+    <button class="btn btn-danger" type="submit">Delete page</button>
+  </div>
+</form>
+{{end}}
+{{end}}

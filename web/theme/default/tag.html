@@ -1,0 +1,28 @@
+<div class="home container tag-archive">
+  <h1>Posts tagged &ldquo;{{.Tag}}&rdquo;</h1>
+  {{if .Posts}}
+  <ul class="post-list">
+    {{range .Posts}}
+    <li class="post-list-item">
+      {{if .Image}}<a class="post-list-thumb" href="/{{.Slug}}"><img src="{{.Image}}" alt="{{.TitlePlain}}"></a>{{end}}
+      <div class="post-list-body">
+        <h2><a href="/{{.Slug}}">{{safeHTML .Title}}</a></h2>
+        <time datetime="{{formatDate .Date "2006-01-02"}}">{{formatDate .Date "January 2, 2006"}}</time>
+        {{if .Description}}<p>{{.Description}}</p>{{end}}
+        {{if .Tags}}<div class="post-tags">{{range .Tags}}<a class="tag" href="/tag/{{tagSlug .}}">{{.}}</a>{{end}}</div>{{end}}
+      </div>
+    </li>
+    {{end}}
+  </ul>
+  {{else}}
+  <p class="empty">No posts with this tag.</p>
+  {{end}}
+
+  {{if gt .TotalPages 1}}
+  <nav class="pagination actions" style="justify-content:center; gap:1rem; margin-top:2rem;">
+    {{if .HasPrev}}<a class="btn btn-sm btn-secondary" href="/tag/{{.TagSlug}}?page={{.PrevPage}}">&larr; Prev</a>{{else}}<span class="btn btn-sm btn-secondary" style="opacity:0.4; pointer-events:none;">&larr; Prev</span>{{end}}
+    <span class="muted">Page {{.Page}} of {{.TotalPages}}</span>
+    {{if .HasNext}}<a class="btn btn-sm btn-secondary" href="/tag/{{.TagSlug}}?page={{.NextPage}}">Next &rarr;</a>{{else}}<span class="btn btn-sm btn-secondary" style="opacity:0.4; pointer-events:none;">Next &rarr;</span>{{end}}
+  </nav>
+  {{end}}
+</div>

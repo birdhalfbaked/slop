@@ -1,0 +1,76 @@
+{{define "content"}}
+<div class="card">
+  <h2 style="margin-top:0;">Install a font</h2>
+  <form method="post" action="/admin/fonts" enctype="multipart/form-data">
+    <div class="row">
+      <div>
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text" placeholder="Inter" required>
+      </div>
+      <div>
+        <label for="family">CSS font-family <span class="muted">(defaults to name)</span></label>
+        <input id="family" name="family" type="text" placeholder="Inter">
+      </div>
+    </div>
+
+    <label>Source</label>
+    <div class="actions">
+      <label style="font-weight:400; margin:0;"><input type="radio" name="source" value="cdn" checked onchange="toggleSource()"> CDN reference</label>
+      <label style="font-weight:400; margin:0;"><input type="radio" name="source" value="file" onchange="toggleSource()"> Upload file</label>
+    </div>
+
+    <div id="cdn-fields">
+      <label for="url">Stylesheet / font URL</label>
+      <input id="url" name="url" type="url" placeholder="https://fonts.googleapis.com/css2?family=Inter&display=swap">
+    </div>
+
+    <div id="file-fields" style="display:none;">
+      <div class="row">
+        <div>
+          <label for="file">Font file (woff2, woff, ttf, otf)</label>
+          <input id="file" name="file" type="file" accept=".woff2,.woff,.ttf,.otf">
+        </div>
+        <div>
+          <label for="weight">Weight</label>
+          <input id="weight" name="weight" type="text" placeholder="400">
+        </div>
+        <div>
+          <label for="style">Style</label>
+          <input id="style" name="style" type="text" placeholder="normal">
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem;"><button class="btn" type="submit">Add font</button></div>
+  </form>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">Installed fonts</h2>
+  {{if .Data.Fonts}}
+  <table>
+    <thead><tr><th>Name</th><th>Family</th><th>Source</th><th>Reference</th><th></th></tr></thead>
+    <tbody>
+      {{range .Data.Fonts}}
+      <tr>
+        <td>{{.Name}}</td>
+        <td style="font-family:'{{.Family}}';">{{.Family}}</td>
+        <td>{{.Source}}</td>
+        <td class="muted" style="word-break:break-all;">{{if eq .Source "cdn"}}{{.URL}}{{else}}/static/fonts/{{.Filename}} {{.Weight}} {{.Style}}{{end}}</td>
+        <td><form method="post" action="/admin/fonts/{{.ID}}/delete" onsubmit="return confirm('Delete this font?');"><button class="btn btn-sm btn-danger" type="submit">Delete</button></form></td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}<p class="muted">No fonts installed yet.</p>{{end}}
+</div>
+
+<script>
+function toggleSource() {
+  const isFile = document.querySelector('input[name=source]:checked').value === 'file';
+  document.getElementById('file-fields').style.display = isFile ? '' : 'none';
+  document.getElementById('cdn-fields').style.display = isFile ? 'none' : '';
+}
+toggleSource();
+</script>
+{{end}}

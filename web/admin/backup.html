@@ -1,0 +1,28 @@
+{{define "content"}}
+<div class="card">
+  <h2 style="margin-top:0;">Export backup</h2>
+  <p class="muted">Download a snapshot of your site. Full backups include the database plus uploaded images and fonts.</p>
+  <div class="actions">
+    <a class="btn" href="/admin/backup/download">Download database (.db)</a>
+    <a class="btn btn-secondary" href="/admin/backup/download?full=1">Download full backup (.zip)</a>
+  </div>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">Restore backup</h2>
+  <p class="muted">Upload a <code>.db</code> or <code>.zip</code> backup created by SLOP. This <strong>replaces</strong> your posts, pages, theme, and settings. Your <strong>admin login</strong> is kept. Zip backups also replace uploads and fonts.</p>
+  <form method="post" action="/admin/backup/restore" enctype="multipart/form-data">
+    <label for="backup">Backup file</label>
+    <input id="backup" name="backup" type="file" accept=".db,.zip,application/zip,application/octet-stream" required>
+
+    <label style="display:flex; align-items:center; gap:0.5rem; margin-top:1rem; font-weight:normal;">
+      <input type="checkbox" name="confirm" value="yes" required>
+      I understand this will replace my current site content
+    </label>
+
+    <div style="margin-top:1rem;">
+      <button class="btn btn-danger" type="submit">Restore from backup</button>
+    </div>
+  </form>
+</div>
+{{end}}

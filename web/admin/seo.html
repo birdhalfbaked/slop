@@ -1,0 +1,41 @@
+{{define "content"}}
+{{$v := .Data.Values}}
+<div class="card">
+  <p class="muted" style="margin-top:0;">Site-wide SEO and OpenGraph defaults. Individual posts can override these in the post editor.</p>
+  <form method="post" action="/admin/seo">
+    <div class="row">
+      <div>
+        <label for="site_title">Site title</label>
+        <input id="site_title" name="site_title" type="text" value="{{index $v "site_title"}}">
+      </div>
+      <div>
+        <label for="og_site_name">OG site name</label>
+        <input id="og_site_name" name="og_site_name" type="text" value="{{index $v "og_site_name"}}">
+      </div>
+    </div>
+
+    <label for="site_description">Site description (default meta description)</label>
+    <textarea id="site_description" name="site_description" rows="3">{{index $v "site_description"}}</textarea>
+
+    <div class="row">
+      <div>
+        <label for="og_default_image">Default OG image URL</label>
+        <input id="og_default_image" name="og_default_image" type="text" list="imagelist" value="{{index $v "og_default_image"}}" placeholder="/static/uploads/...">
+      </div>
+      <div>
+        <label for="twitter_handle">Twitter handle</label>
+        <input id="twitter_handle" name="twitter_handle" type="text" value="{{index $v "twitter_handle"}}" placeholder="@handle">
+      </div>
+    </div>
+
+    <label for="base_url">Base URL <span class="muted">(used to build absolute og:url, e.g. https://example.com)</span></label>
+    <input id="base_url" name="base_url" type="url" value="{{index $v "base_url"}}" placeholder="https://example.com">
+
+    <h3 style="margin-top:1.5rem;">Blog display</h3>
+    <label for="posts_per_page">Posts per page</label>
+    <input id="posts_per_page" name="posts_per_page" type="number" min="1" max="100" value="{{index $v "posts_per_page"}}" placeholder="10">
+
+    <div style="margin-top:1rem;"><button class="btn" type="submit">Save SEO settings</button></div>
+  </form>
+</div>
+{{end}}

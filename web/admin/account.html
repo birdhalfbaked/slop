@@ -1,0 +1,26 @@
+{{define "content"}}
+<div class="card" style="max-width:520px;">
+  {{if .Data.MustChange}}
+  <div class="flash" style="background:#fef9c3; color:#854d0e;">
+    Welcome! For security, please choose your own username and password before continuing.
+  </div>
+  {{end}}
+  {{if .Data.Error}}<div class="flash" style="background:#fee2e2; color:#991b1b;">{{.Data.Error}}</div>{{end}}
+
+  <form method="post" action="/admin/account">
+    <label for="current_password">Current password</label>
+    <input id="current_password" name="current_password" type="password" autocomplete="current-password" required>
+
+    <label for="new_username">New username</label>
+    <input id="new_username" name="new_username" type="text" value="{{.Data.Username}}" autocomplete="username" required>
+
+    <label for="new_password">New password <span class="muted">(min 8 characters)</span></label>
+    <input id="new_password" name="new_password" type="password" autocomplete="new-password" required>
+
+    <label for="confirm_password">Confirm new password</label>
+    <input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" required>
+
+    <div style="margin-top:1rem;"><button class="btn" type="submit">Update credentials</button></div>
+  </form>
+</div>
+{{end}}

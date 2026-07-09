@@ -1,0 +1,37 @@
+{{define "content"}}
+<div class="actions" style="justify-content:space-between; margin-bottom:1rem;">
+  <span class="muted">{{.Data.Total}} page(s)</span>
+  <a class="btn" href="/admin/pages/new">+ New Page</a>
+</div>
+
+<div class="card">
+  {{if .Data.Pages}}
+  <table>
+    <thead><tr><th>Title</th><th>Slug</th><th>Status</th><th>Updated</th><th>Actions</th></tr></thead>
+    <tbody>
+      {{range .Data.Pages}}
+      <tr>
+        <td>{{if .Title}}{{.Title}}{{else}}<em class="muted">(untitled)</em>{{end}}</td>
+        <td><a href="/{{.Slug}}" target="_blank">/{{.Slug}}</a></td>
+        <td>
+          {{if eq .Status "published"}}<span class="badge badge-published">Published</span>{{else}}<span class="badge badge-draft">Draft</span>{{end}}
+        </td>
+        <td class="muted">{{date .UpdatedAt}}</td>
+        <td class="actions">
+          <a class="btn btn-sm btn-secondary" href="/admin/pages/{{.ID}}/edit">Edit</a>
+          {{if eq .Status "published"}}
+          <form method="post" action="/admin/pages/{{.ID}}/unpublish"><button class="btn btn-sm btn-secondary" type="submit">Unpublish</button></form>
+          {{else}}
+          <form method="post" action="/admin/pages/{{.ID}}/publish"><button class="btn btn-sm" type="submit">Publish</button></form>
+          {{end}}
+          <form method="post" action="/admin/pages/{{.ID}}/delete" onsubmit="return confirm('Delete this page?');"><button class="btn btn-sm btn-danger" type="submit">Delete</button></form>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <p class="muted">No pages yet. <a href="/admin/pages/new">Create your first page</a>.</p>
+  {{end}}
+</div>
+{{end}}

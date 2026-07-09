@@ -1,0 +1,51 @@
+{{define "content"}}
+<div class="actions" style="margin-bottom:1rem;">
+  <a class="btn" href="/admin/posts/new">+ New Post</a>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">Published ({{len .Data.Published}})</h2>
+  {{if .Data.Published}}
+  <table>
+    <thead><tr><th>Title</th><th>Slug</th><th>Published</th><th>Actions</th></tr></thead>
+    <tbody>
+      {{range .Data.Published}}
+      <tr>
+        <td>{{.Title}}</td>
+        <td><a href="/{{.Slug}}" target="_blank">/{{.Slug}}</a></td>
+        <td class="muted">{{date .UpdatedAt}}</td>
+        <td class="actions">
+          <a class="btn btn-sm btn-secondary" href="/admin/posts/{{.ID}}/edit">Edit</a>
+          <form method="post" action="/admin/posts/{{.ID}}/unpublish"><button class="btn btn-sm btn-secondary" type="submit">Unpublish</button></form>
+          <form method="post" action="/admin/posts/{{.ID}}/delete" onsubmit="return confirm('Delete this post?');"><button class="btn btn-sm btn-danger" type="submit">Delete</button></form>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}<p class="muted">No published posts yet.</p>{{end}}
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">Drafts ({{len .Data.Drafts}})</h2>
+  {{if .Data.Drafts}}
+  <table>
+    <thead><tr><th>Title</th><th>Slug</th><th>Updated</th><th>Actions</th></tr></thead>
+    <tbody>
+      {{range .Data.Drafts}}
+      <tr>
+        <td>{{if .Title}}{{.Title}}{{else}}<em class="muted">(untitled)</em>{{end}}</td>
+        <td class="muted">/{{.Slug}}</td>
+        <td class="muted">{{date .UpdatedAt}}</td>
+        <td class="actions">
+          <a class="btn btn-sm btn-secondary" href="/admin/posts/{{.ID}}/edit">Edit</a>
+          <form method="post" action="/admin/posts/{{.ID}}/publish"><button class="btn btn-sm" type="submit">Publish</button></form>
+          <form method="post" action="/admin/posts/{{.ID}}/delete" onsubmit="return confirm('Delete this draft?');"><button class="btn btn-sm btn-danger" type="submit">Delete</button></form>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}<p class="muted">No drafts.</p>{{end}}
+</div>
+{{end}}

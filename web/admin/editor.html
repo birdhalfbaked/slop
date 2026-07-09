@@ -1,0 +1,265 @@
+{{define "content"}}
+{{$post := .Data.Post}}
+<form id="editor" method="post" action="{{if .Data.IsNew}}/admin/posts{{else}}/admin/posts/{{$post.ID}}{{end}}">
+<div class="row" style="align-items:flex-start;">
+
+  <div style="flex:1; min-width:340px;">
+    <div class="card">
+      <label for="title">Title</label>
+      <input id="title" name="title" type="text" value="{{$post.Title}}" placeholder="Post title">
+
+      <label for="slug">Slug <span class="muted">(URL: /slug — leave blank to auto-generate)</span></label>
+      <input id="slug" name="slug" type="text" value="{{$post.Slug}}" placeholder="my-post">
+
+      <label for="description">Short description <span class="muted">(available in themes as .Post.Description)</span></label>
+      <textarea id="description" name="description" rows="2" placeholder="A short summary shown in listings and used as an SEO fallback">{{$post.Description}}</textarea>
+
+      <div class="row">
+        <div>
+          <label for="image">Header image</label>
+          <div class="actions" style="align-items:stretch;">
+            <input id="image" name="image" type="text" list="imagelist" value="{{$post.Image}}" placeholder="/static/uploads/..." style="flex:1;">
+            <button class="btn btn-sm btn-secondary" type="button" onclick="openImageModal('image')">Choose</button>
+          </div>
+          <datalist id="imagelist">
+            {{range .Data.Images}}<option value="{{.Path}}">{{.Filename}}</option>{{end}}
+          </datalist>
+        </div>
+        <div>
+          <label for="tags">Tags <span class="muted">(comma-separated)</span></label>
+          <input id="tags" name="tags" type="text" value="{{.Data.TagsCSV}}" placeholder="go, sqlite">
+        </div>
+      </div>
+
+      <label for="published_at">Publish date <span class="muted">(used when published; supports scheduling)</span></label>
+      <input id="published_at" name="published_at" type="datetime-local" value="{{datetimeLocal $post.PublishedAt}}">
+
+      <label for="body_format">Format</label>
+      <select id="body_format" name="body_format">
+        <option value="markdown" {{if eq $post.BodyFormat "markdown"}}selected{{end}}>Markdown</option>
+        <option value="html" {{if eq $post.BodyFormat "html"}}selected{{end}}>HTML</option>
+      </select>
+
+      <div class="actions" style="justify-content:space-between; align-items:flex-end;">
+        <label for="body_source" style="margin-bottom:0;">Content</label>
+        <button class="btn btn-sm btn-secondary" type="button" onclick="openImageModal('content')">Insert image</button>
+      </div>
+      <textarea id="body_source" name="body_source" class="code" rows="20" placeholder="Write your post...">{{$post.BodySource}}</textarea>
+    </div>
+
+    <div class="card">
+      <details {{if or $post.MetaDescription $post.OGTitle $post.OGDescription $post.OGImage}}open{{end}}>
+        <summary>SEO / Social (overrides site defaults)</summary>
+        <label for="meta_description">Meta description</label>
+        <textarea id="meta_description" name="meta_description" rows="2">{{$post.MetaDescription}}</textarea>
+        <div class="row">
+          <div>
+            <label for="og_title">OG title</label>
+            <input id="og_title" name="og_title" type="text" value="{{$post.OGTitle}}">
+          </div>
+          <div>
+            <label for="og_image">OG image</label>
+            <div class="actions" style="align-items:stretch;">
+              <input id="og_image" name="og_image" type="text" list="imagelist" value="{{$post.OGImage}}" style="flex:1;">
+              <button class="btn btn-sm btn-secondary" type="button" onclick="openImageModal('og_image')">Choose</button>
+            </div>
+          </div>
+        </div>
+        <label for="og_description">OG description</label>
+        <textarea id="og_description" name="og_description" rows="2">{{$post.OGDescription}}</textarea>
+      </details>
+    </div>
+
+    <div class="card actions">
+      <a class="btn btn-secondary" href="/admin/posts">&larr; Back to posts</a>
+      <button class="btn btn-secondary" type="submit" name="action" value="save">Save draft</button>
+      {{if eq $post.Status "published"}}
+      <button class="btn" type="submit" name="action" value="save">Save</button>
+      <button class="btn btn-secondary" type="submit" name="action" value="unpublish">Unpublish</button>
+      <span class="badge badge-published">Published</span>
+      {{else}}
+      <button class="btn" type="submit" name="action" value="publish">Publish</button>
+      {{if not .Data.IsNew}}<span class="badge badge-draft">Draft</span>{{end}}
+      {{end}}
+    </div>
+  </div>
+
+  <div style="flex:1; min-width:340px; position:sticky; top:1rem;">
+    <div class="card" style="padding:0.75rem;">
+      <div class="actions" style="margin-bottom:0.5rem;">
+        <strong style="flex:1;">Live preview</strong>
+        <button class="btn btn-sm btn-secondary" type="button" onclick="updatePreview()">Refresh</button>
+      </div>
+      <iframe id="preview" title="preview" style="width:100%; height:75vh; border:1px solid #cbd5e1; border-radius:6px; background:#fff;"></iframe>
+    </div>
+  </div>
+
+</div>
+</form>
+
+<div id="image-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); z-index:100; align-items:flex-start; justify-content:center; overflow:auto; padding:2rem 1rem;">
+  <div class="card" style="max-width:640px; width:100%; margin-top:2vh;">
+    <div class="actions" style="justify-content:space-between; margin-bottom:0.75rem;">
+      <h2 id="modal-title" style="margin:0;">Insert image</h2>
+      <button class="btn btn-sm btn-secondary" type="button" onclick="closeImageModal()">Cancel</button>
+    </div>
+
+    <label>Upload a new image</label>
+    <div class="actions">
+      <input id="modal-file" type="file" accept="image/*">
+      <button class="btn btn-sm" type="button" onclick="uploadModalImage()">Upload</button>
+      <span id="modal-upload-status" class="muted"></span>
+    </div>
+
+    <label style="margin-top:1rem;">Or pick from the gallery</label>
+    <div id="modal-gallery" class="grid" style="max-height:240px; overflow:auto; padding:0.25rem;">
+      {{range .Data.Images}}
+      <button type="button" class="modal-thumb" data-path="{{.Path}}" onclick="selectThumb(this)" style="padding:0; border:2px solid transparent; border-radius:8px; background:none; cursor:pointer;">
+        <img src="{{.Path}}" alt="{{.Filename}}" style="width:100%; height:90px; object-fit:cover; border-radius:6px; display:block; background:#f1f5f9;">
+      </button>
+      {{end}}
+    </div>
+    <p id="modal-empty" class="muted" {{if .Data.Images}}style="display:none;"{{end}}>No images yet. Upload one above.</p>
+
+    <div id="figure-options" class="row" style="margin-top:1rem;">
+      <div style="flex:2;">
+        <label for="modal-caption">Caption <span class="muted">(optional)</span></label>
+        <input id="modal-caption" type="text" placeholder="Figure caption">
+      </div>
+      <div style="flex:1;">
+        <label for="modal-placement">Placement</label>
+        <select id="modal-placement">
+          <option value="none">None (block)</option>
+          <option value="left">Left (wrap text)</option>
+          <option value="right">Right (wrap text)</option>
+          <option value="center">Center</option>
+          <option value="full">Full width</option>
+        </select>
+      </div>
+      <div style="flex:1;">
+        <label for="modal-width">Width <span class="muted">(optional)</span></label>
+        <input id="modal-width" type="text" placeholder="320px or 50%">
+      </div>
+    </div>
+
+    <div class="actions" style="margin-top:1rem; justify-content:flex-end;">
+      <span id="modal-selected" class="muted" style="flex:1;"></span>
+      <button id="modal-confirm" class="btn" type="button" onclick="confirmModal()">Insert</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById('editor');
+let timer = null;
+function updatePreview() {
+  const body = new URLSearchParams(new FormData(form));
+  fetch('/admin/preview', { method: 'POST', body })
+    .then(r => r.text())
+    .then(html => { document.getElementById('preview').srcdoc = html; })
+    .catch(() => {});
+}
+function schedulePreview() {
+  clearTimeout(timer);
+  timer = setTimeout(updatePreview, 500);
+}
+form.addEventListener('input', schedulePreview);
+form.addEventListener('change', schedulePreview);
+updatePreview();
+
+// ---- Image library modal ----
+let selectedPath = '';
+let modalTarget = 'content'; // 'content' inserts a figure; otherwise sets that field's value
+
+function openImageModal(target) {
+  modalTarget = target || 'content';
+  selectedPath = '';
+  document.querySelectorAll('.modal-thumb').forEach(t => t.style.borderColor = 'transparent');
+  document.getElementById('modal-selected').textContent = '';
+  const isContent = modalTarget === 'content';
+  document.getElementById('figure-options').style.display = isContent ? '' : 'none';
+  document.getElementById('modal-title').textContent = isContent ? 'Insert image' : 'Choose image';
+  document.getElementById('modal-confirm').textContent = isContent ? 'Insert' : 'Use image';
+  document.getElementById('image-modal').style.display = 'flex';
+}
+function closeImageModal() {
+  document.getElementById('image-modal').style.display = 'none';
+}
+function selectThumb(btn) {
+  selectedPath = btn.getAttribute('data-path');
+  document.querySelectorAll('.modal-thumb').forEach(t => t.style.borderColor = 'transparent');
+  btn.style.borderColor = '#3b82f6';
+  document.getElementById('modal-selected').textContent = 'Selected: ' + selectedPath;
+}
+function confirmModal() {
+  if (modalTarget === 'content') { insertImage(); return; }
+  if (!selectedPath) { document.getElementById('modal-selected').textContent = 'Select or upload an image first.'; return; }
+  const field = document.getElementById(modalTarget);
+  if (field) {
+    field.value = selectedPath;
+    field.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  closeImageModal();
+  form.dispatchEvent(new Event('input'));
+}
+function addThumb(path, filename) {
+  const gallery = document.getElementById('modal-gallery');
+  document.getElementById('modal-empty').style.display = 'none';
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'modal-thumb';
+  btn.setAttribute('data-path', path);
+  btn.style.cssText = 'padding:0; border:2px solid transparent; border-radius:8px; background:none; cursor:pointer;';
+  btn.onclick = () => selectThumb(btn);
+  const img = document.createElement('img');
+  img.src = path;
+  img.alt = filename || '';
+  img.style.cssText = 'width:100%; height:90px; object-fit:cover; border-radius:6px; display:block; background:#f1f5f9;';
+  btn.appendChild(img);
+  gallery.prepend(btn);
+  selectThumb(btn);
+}
+function uploadModalImage() {
+  const input = document.getElementById('modal-file');
+  const status = document.getElementById('modal-upload-status');
+  if (!input.files || !input.files.length) { status.textContent = 'Choose a file first.'; return; }
+  const fd = new FormData();
+  fd.append('file', input.files[0]);
+  status.textContent = 'Uploading...';
+  fetch('/admin/images/upload', { method: 'POST', body: fd })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(data => { status.textContent = 'Uploaded.'; input.value = ''; addThumb(data.path, data.filename); })
+    .catch(() => { status.textContent = 'Upload failed.'; });
+}
+function escHTML(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function insertAtCursor(textarea, text) {
+  const start = textarea.selectionStart, end = textarea.selectionEnd;
+  textarea.value = textarea.value.slice(0, start) + text + textarea.value.slice(end);
+  const pos = start + text.length;
+  textarea.selectionStart = textarea.selectionEnd = pos;
+  textarea.focus();
+}
+function insertImage() {
+  if (!selectedPath) { document.getElementById('modal-selected').textContent = 'Select or upload an image first.'; return; }
+  const caption = document.getElementById('modal-caption').value.trim();
+  const placement = document.getElementById('modal-placement').value;
+  const width = document.getElementById('modal-width').value.trim();
+  const classMap = { left: 'align-left', right: 'align-right', center: 'align-center', full: 'full-width' };
+  let cls = 'post-figure';
+  if (classMap[placement]) cls += ' ' + classMap[placement];
+  const style = width ? ` style="width:${escHTML(width)};"` : '';
+  const alt = caption ? escHTML(caption) : '';
+  let fig = `\n<figure class="${cls}"${style}>\n  <img src="${escHTML(selectedPath)}" alt="${alt}">\n`;
+  if (caption) fig += `  <figcaption>${escHTML(caption)}</figcaption>\n`;
+  fig += `</figure>\n\n`;
+  insertAtCursor(document.getElementById('body_source'), fig);
+  closeImageModal();
+  // reset caption/width for next use
+  document.getElementById('modal-caption').value = '';
+  document.getElementById('modal-width').value = '';
+  form.dispatchEvent(new Event('input'));
+}
+</script>
+{{end}}

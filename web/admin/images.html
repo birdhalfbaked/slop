@@ -1,0 +1,29 @@
+{{define "content"}}
+<div class="card">
+  <h2 style="margin-top:0;">Upload image</h2>
+  <form method="post" action="/admin/images" enctype="multipart/form-data" class="actions">
+    <input type="file" name="file" accept="image/*" required>
+    <button class="btn" type="submit">Upload</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2 style="margin-top:0;">Library</h2>
+  {{if .Data.Images}}
+  <div class="grid">
+    {{range .Data.Images}}
+    <div style="border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
+      <img src="{{.Path}}" alt="{{.Filename}}" style="width:100%; height:120px; object-fit:cover; display:block; background:#f1f5f9;">
+      <div style="padding:0.5rem;">
+        <div class="muted" style="font-size:0.75rem; word-break:break-all; margin-bottom:0.4rem;">{{.Path}}</div>
+        <div class="actions">
+          <button class="btn btn-sm btn-secondary" type="button" onclick="navigator.clipboard.writeText('{{.Path}}')">Copy path</button>
+          <form method="post" action="/admin/images/{{.ID}}/delete" onsubmit="return confirm('Delete this image?');"><button class="btn btn-sm btn-danger" type="submit">Delete</button></form>
+        </div>
+      </div>
+    </div>
+    {{end}}
+  </div>
+  {{else}}<p class="muted">No images uploaded yet.</p>{{end}}
+</div>
+{{end}}

@@ -1,0 +1,18 @@
+# Legacy repo-local dev paths (optional -db/-static overrides)
+/data/
+/static/uploads/*
+/static/fonts/*
+!/static/uploads/.gitkeep
+!/static/fonts/.gitkeep
+
+# SQLite artifacts (any location)
+*.db
+*.db-shm
+*.db-wal
+
+# Backups
+/backups/
+
+# Build output
+/slop
+/slop.exe
