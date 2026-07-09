@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0"
+	xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:wp="http://wordpress.org/export/1.2/">
+
+<channel>
+	<title>SLOP Test Export</title>
+	<link>https://example.test</link>
+	<description>Minimal WXR fixture for slop import tests</description>
+	<wp:base_blog_url>https://example.test</wp:base_blog_url>
+
+	<item>
+		<title>hero.png</title>
+		<link>https://example.test/wp-content/uploads/hero.png</link>
+		<wp:post_id>100</wp:post_id>
+		<wp:post_date>2024-01-01 00:00:00</wp:post_date>
+		<wp:post_date_gmt>2024-01-01 00:00:00</wp:post_date_gmt>
+		<wp:post_type>attachment</wp:post_type>
+		<wp:status>inherit</wp:status>
+		<wp:attachment_url>https://example.test/wp-content/uploads/hero.png</wp:attachment_url>
+	</item>
+
+	<item>
+		<title>diagram.jpg</title>
+		<link>https://example.test/wp-content/uploads/diagram.jpg</link>
+		<wp:post_id>101</wp:post_id>
+		<wp:post_date>2024-01-02 00:00:00</wp:post_date>
+		<wp:post_date_gmt>2024-01-02 00:00:00</wp:post_date_gmt>
+		<wp:post_type>attachment</wp:post_type>
+		<wp:status>inherit</wp:status>
+		<wp:attachment_url>https://example.test/wp-content/uploads/diagram.jpg</wp:attachment_url>
+	</item>
+
+	<item>
+		<title>Chess is actually fun</title>
+		<link>https://example.test/chess-is-actually-fun/</link>
+		<dc:creator>admin</dc:creator>
+		<content:encoded><![CDATA[<!-- wp:paragraph -->
+<p>Chess is a great game.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:list {"ordered":true} -->
+<ol class="wp-block-list"><!-- wp:list-item -->
+<li>I have a distaste for any website that used .org in the modern age and expects to be taken seriously</li>
+<!-- /wp:list-item -->
+
+<!-- wp:list-item -->
+<li>Social content matters and helps keep the game relevant. I feel this is lacking in lichess.org</li>
+<!-- /wp:list-item --></ol>
+<!-- /wp:list -->
+
+<!-- wp:quote -->
+<blockquote class="wp-block-quote"><!-- wp:paragraph -->
+<p>I CAN take this pawn, therefore I MUST take this pawn</p>
+<!-- /wp:paragraph --><cite>me</cite></blockquote>
+<!-- /wp:quote -->]]></content:encoded>
+		<excerpt:encoded><![CDATA[A short note about chess.]]></excerpt:encoded>
+		<wp:post_id>42</wp:post_id>
+		<wp:post_date>2024-06-15 14:00:00</wp:post_date>
+		<wp:post_date_gmt>2024-06-15 12:00:00</wp:post_date_gmt>
+		<wp:post_name>chess-is-actually-fun</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+		<category domain="post_tag" nicename="chess"><![CDATA[Chess]]></category>
+		<category domain="post_tag" nicename="fun"><![CDATA[Fun]]></category>
+		<wp:postmeta>
+			<wp:meta_key>_thumbnail_id</wp:meta_key>
+			<wp:meta_value>100</wp:meta_value>
+		</wp:postmeta>
+	</item>
+
+	<item>
+		<title>Hello world</title>
+		<link>https://example.test/hello-world/</link>
+		<content:encoded><![CDATA[<p>Welcome to the test blog.</p>]]></content:encoded>
+		<wp:post_id>43</wp:post_id>
+		<wp:post_date>2024-05-01 10:00:00</wp:post_date>
+		<wp:post_date_gmt>2024-05-01 08:00:00</wp:post_date_gmt>
+		<wp:post_name>hello-world</wp:post_name>
+		<wp:status>publish</wp:status>
+		<wp:post_type>post</wp:post_type>
+	</item>
+
+	<item>
+		<title>Draft ideas</title>
+		<link>https://example.test/?p=44</link>
+		<content:encoded><![CDATA[<p>Not published yet.</p>]]></content:encoded>
+		<wp:post_id>44</wp:post_id>
+		<wp:post_date>2024-07-01 09:00:00</wp:post_date>
+		<wp:post_date_gmt>2024-07-01 07:00:00</wp:post_date_gmt>
+		<wp:post_name>draft-ideas</wp:post_name>
+		<wp:status>draft</wp:status>
+		<wp:post_type>post</wp:post_type>
+	</item>
+
+</channel>
+</rss>

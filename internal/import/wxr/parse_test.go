@@ -12,7 +12,7 @@ func fixturePath(t *testing.T) string {
 	if !ok {
 		t.Fatal("caller")
 	}
-	return filepath.Join(filepath.Dir(file), "..", "..", "..", "examples", "birdhalf-baked.WordPress.2026-07-08.xml")
+	return filepath.Join(filepath.Dir(file), "testdata", "sample.wxr.xml")
 }
 
 func TestParseFixture(t *testing.T) {
@@ -20,14 +20,17 @@ func TestParseFixture(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(export.Posts) != 17 {
-		t.Fatalf("posts: got %d want 17", len(export.Posts))
+	if len(export.Posts) != 3 {
+		t.Fatalf("posts: got %d want 3", len(export.Posts))
 	}
-	if len(export.Attachments) != 151 {
-		t.Fatalf("attachments: got %d want 151", len(export.Attachments))
+	if len(export.Attachments) != 2 {
+		t.Fatalf("attachments: got %d want 2", len(export.Attachments))
 	}
-	if export.BaseURL != "https://birdhalfbaked.com" {
+	if export.BaseURL != "https://example.test" {
 		t.Fatalf("base URL: got %q", export.BaseURL)
+	}
+	if export.Attachments[100] != "https://example.test/wp-content/uploads/hero.png" {
+		t.Fatalf("attachment 100: got %q", export.Attachments[100])
 	}
 
 	var chess *Post
@@ -49,10 +52,16 @@ func TestParseFixture(t *testing.T) {
 	if chess.PublishedAt.IsZero() {
 		t.Fatal("expected published date on chess post")
 	}
-	if chess.PublishedAt.Year() != 2024 {
-		t.Fatalf("published year: %d", chess.PublishedAt.Year())
+	if chess.PublishedAt.Year() != 2024 || chess.PublishedAt.Month() != 6 {
+		t.Fatalf("published date: %v", chess.PublishedAt)
 	}
-	if len(chess.Tags) == 0 {
-		t.Fatal("expected tags on chess post")
+	if len(chess.Tags) != 2 {
+		t.Fatalf("tags: got %v", chess.Tags)
+	}
+	if chess.ThumbnailID != 100 {
+		t.Fatalf("thumbnail: got %d", chess.ThumbnailID)
+	}
+	if chess.Excerpt != "A short note about chess." {
+		t.Fatalf("excerpt: got %q", chess.Excerpt)
 	}
 }

@@ -96,7 +96,7 @@ slop import wordpress export.xml
 
 Images are downloaded into `static/uploads/`. Content is converted to markdown (with HTML for figures and some inline tags).
 
-A sample export for testing ships with the repo: `examples/birdhalf-baked.WordPress.2026-07-08.xml`.
+A minimal WXR sample for development and tests lives at `internal/import/wxr/testdata/sample.wxr.xml`.
 
 ## Password recovery
 

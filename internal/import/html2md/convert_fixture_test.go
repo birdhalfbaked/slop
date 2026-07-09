@@ -7,7 +7,7 @@ import (
 	"slop/internal/import/htmlclean"
 )
 
-// Snippet from examples/birdhalf-baked.WordPress.2026-07-08.xml (chess-is-actually-fun).
+// Snippet from internal/import/wxr/testdata/sample.wxr.xml (chess-is-actually-fun).
 const chessListSnippet = `<!-- wp:list {"ordered":true} -->
 <ol class="wp-block-list"><!-- wp:list-item -->
 <li>I have a distaste for any website that used .org in the modern age and expects to be taken seriously</li>
