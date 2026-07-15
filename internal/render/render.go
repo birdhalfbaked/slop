@@ -248,6 +248,26 @@ func resolve(values ...string) string {
 	return ""
 }
 
+// absoluteURL joins base and path into an absolute URL for social meta tags.
+// Absolute http(s) paths are returned unchanged. Empty path returns empty.
+func absoluteURL(base, path string) string {
+	path = strings.TrimSpace(path)
+	if path == "" {
+		return ""
+	}
+	if strings.HasPrefix(path, "http://") || strings.HasPrefix(path, "https://") {
+		return path
+	}
+	base = strings.TrimRight(strings.TrimSpace(base), "/")
+	if base == "" {
+		return path
+	}
+	if !strings.HasPrefix(path, "/") {
+		path = "/" + path
+	}
+	return base + path
+}
+
 func metaTag(name, content string) string {
 	if strings.TrimSpace(content) == "" {
 		return ""
@@ -264,6 +284,7 @@ func ogTag(property, content string) string {
 
 func buildMeta(settings map[string]string, post *models.Post, staticPage *models.StaticPage) template.HTML {
 	siteTitle := settings["site_title"]
+	base := strings.TrimRight(settings["base_url"], "/")
 	var b strings.Builder
 
 	var title, description, image, url, ogType string
@@ -271,7 +292,7 @@ func buildMeta(settings map[string]string, post *models.Post, staticPage *models
 		title = StripHTML(resolve(post.OGTitle, post.Title, siteTitle))
 		description = resolve(post.MetaDescription, post.OGDescription, post.Description, settings["site_description"])
 		image = resolve(post.OGImage, post.Image, settings["og_default_image"])
-		if base := strings.TrimRight(settings["base_url"], "/"); base != "" {
+		if base != "" {
 			url = base + "/" + post.Slug
 		}
 		ogType = "article"
@@ -279,7 +300,7 @@ func buildMeta(settings map[string]string, post *models.Post, staticPage *models
 		title = StripHTML(resolve(staticPage.Title, siteTitle))
 		description = settings["site_description"]
 		image = settings["og_default_image"]
-		if base := strings.TrimRight(settings["base_url"], "/"); base != "" {
+		if base != "" {
 			url = base + "/" + staticPage.Slug
 		}
 		ogType = "website"
@@ -287,9 +308,10 @@ func buildMeta(settings map[string]string, post *models.Post, staticPage *models
 		title = StripHTML(siteTitle)
 		description = settings["site_description"]
 		image = settings["og_default_image"]
-		url = strings.TrimRight(settings["base_url"], "/")
+		url = base
 		ogType = "website"
 	}
+	image = absoluteURL(base, image)
 
 	b.WriteString(fmt.Sprintf("<title>%s</title>\n", html.EscapeString(title)))
 	b.WriteString(metaTag("description", description))

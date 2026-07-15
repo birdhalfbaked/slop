@@ -333,7 +333,10 @@ func restoreStaticFromZip(zr *zip.ReadCloser, staticDir string) error {
 		if name == "" || strings.HasSuffix(name, "/") || f.FileInfo().IsDir() {
 			continue
 		}
-		dest := filepath.Join(destDir, filepath.FromSlash(name))
+		dest, ok := safeJoinUnder(destDir, name)
+		if !ok {
+			return fmt.Errorf("invalid path in zip entry %q", f.Name)
+		}
 		if err := os.MkdirAll(filepath.Dir(dest), 0o755); err != nil {
 			return err
 		}
@@ -342,6 +345,28 @@ func restoreStaticFromZip(zr *zip.ReadCloser, staticDir string) error {
 		}
 	}
 	return nil
+}
+
+// safeJoinUnder joins an untrusted relative path under baseDir and returns ok=false
+// if the resulting path would escape baseDir (zip-slip / path traversal).
+func safeJoinUnder(baseDir string, untrusted string) (dest string, ok bool) {
+	rel := filepath.Clean(filepath.FromSlash(untrusted))
+	if rel == "." || rel == "" {
+		return "", false
+	}
+	if filepath.IsAbs(rel) {
+		return "", false
+	}
+	dest = filepath.Join(baseDir, rel)
+	// Ensure dest is still under baseDir.
+	r, err := filepath.Rel(baseDir, dest)
+	if err != nil {
+		return "", false
+	}
+	if r == "." || strings.HasPrefix(r, ".."+string(filepath.Separator)) || r == ".." {
+		return "", false
+	}
+	return dest, true
 }
 
 func extractZipFile(f *zip.File, dest string) error {

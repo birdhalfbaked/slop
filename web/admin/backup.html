@@ -11,6 +11,7 @@
 <div class="card">
   <h2 style="margin-top:0;">Restore backup</h2>
   <p class="muted">Upload a <code>.db</code> or <code>.zip</code> backup created by SLOP. This <strong>replaces</strong> your posts, pages, theme, and settings. Your <strong>admin login</strong> is kept. Zip backups also replace uploads and fonts.</p>
+  <p class="muted"><strong>Security note:</strong> only restore backups you trust. Backups can include theme templates and content (raw HTML/JS) that will be served to visitors.</p>
   <form method="post" action="/admin/backup/restore" enctype="multipart/form-data">
     <label for="backup">Backup file</label>
     <input id="backup" name="backup" type="file" accept=".db,.zip,application/zip,application/octet-stream" required>

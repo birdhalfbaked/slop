@@ -20,6 +20,12 @@ Open **Admin → Backup**.
 
 Restore from the admin UI works while the server is running (the database is briefly disconnected during restore).
 
+## Security note
+
+Backups restore **theme templates**, **CSS/JS**, and post/page content. Content is intentionally allowed to contain raw HTML and JavaScript.
+
+Only restore backups you created or otherwise fully trust.
+
 ## CLI backup
 
 Default paths use your [data directory](../README.md#where-data-lives) (`~/.slop/...` or Windows `%USERPROFILE%\AppData\LocalLow\slop\`).

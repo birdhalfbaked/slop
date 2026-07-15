@@ -259,6 +259,33 @@ func TestRestoreInvalidZip(t *testing.T) {
 	}
 }
 
+func TestRestoreZipRejectsTraversal(t *testing.T) {
+	root := t.TempDir()
+	backupDB := filepath.Join(root, "backup.db")
+	destDB := filepath.Join(root, "dest.db")
+
+	database, err := db.Open(backupDB)
+	if err != nil {
+		t.Fatal(err)
+	}
+	database.Close()
+
+	zipPath := filepath.Join(root, "bad-path.zip")
+	if err := writeTestZip(zipPath, backupDB, map[string][]byte{
+		"uploads/../evil.txt": []byte("nope"),
+	}); err != nil {
+		t.Fatal(err)
+	}
+	_, err = backup.Restore(zipPath, backup.RestoreOptions{
+		DBPath:    destDB,
+		StaticDir: filepath.Join(root, "static"),
+		Force:     true,
+	})
+	if err == nil {
+		t.Fatal("expected traversal rejection error")
+	}
+}
+
 func writeTestZip(zipPath, dbPath string, extra map[string][]byte) error {
 	f, err := os.Create(zipPath)
 	if err != nil {
